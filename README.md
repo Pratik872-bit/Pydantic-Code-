@@ -1,4 +1,4 @@
-# Pydantic – Simple English Notes
+# Pydantic – NOTES 
 
 ## What is Pydantic?
 
@@ -276,7 +276,7 @@ Uses:
 ---
 
 ### **6️⃣ Field Validators**
-# Pydantic `field_validator` – Simple Explanation
+# Pydantic `field_validator` 
 
 ## 🚀 What is `field_validator`?
 
@@ -441,7 +441,7 @@ def check_emergency_contact(cls, model):
 
 ### **8️⃣ Computed Fields**
 
-# Pydantic `computed_field` – Explained Simply
+# Pydantic `computed_field`
 
 ## 🧮 What is `computed_field` in Pydantic v2?
 
@@ -590,9 +590,52 @@ It ensures calculated values are always correct and never manually entered by mi
 
 ### **9️⃣ Nested Models**
 
-Use one model inside another for structured data.
+# Nested Models in Pydantic
+
+## 🏗️ What are Nested Models?
+
+Nested Models in Pydantic allow us to use one model inside another model. This helps in representing complex data structures in a clean, modular, and reusable format.
+
+➡️ Instead of repeating code, we **embed** small models inside larger ones.
+➡️ Think of nested models as **building blocks** that combine to form structured data.
+
+## 🧠 Why do we need Nested Models?
+
+Use nested models when:
+
+✔ Data has a hierarchical or structured format
+✔ You want to avoid repeating the same fields everywhere
+✔ You want clean, modular, and organized code
+✔ You want automatic validation on entire sub-objects
+
+### Real-world examples:
+
+* A **Patient** has an **Address** model
+* A **Company** has multiple **Employees**
+* A **User** has a **Profile** section
+* An **Order** contains multiple **Products**
+
+## 🔍 Syntax (Pydantic v2)
 
 ```python
+from pydantic import BaseModel
+
+class Address(BaseModel):
+    city: str
+    state: str
+    pincode: int
+
+class Person(BaseModel):
+    name: str
+    age: int
+    address: Address  # Nested model
+```
+
+## 🎯 Example 1: Patient with Address
+
+```python
+from pydantic import BaseModel
+
 class Address(BaseModel):
     city: str
     state: str
@@ -602,16 +645,104 @@ class Patient(BaseModel):
     name: str
     age: int
     address: Address
+
+patient1 = Patient(
+    name="Pratik",
+    age=19,
+    address=Address(city="Sangli", state="Maharashtra", pincode=416312)
+)
+print(patient1)
 ```
 
-**Benefits:**
+### Output:
 
-* Cleaner code
-* Reusable components
-* Better readability
-* Automated validation
+```
+name='Pratik' age=19 address=Address(city='Sangli', state='Maharashtra', pincode=416312)
+```
 
----
+## 🎯 Example 2: Order with Products
+
+```python
+from pydantic import BaseModel
+from typing import List
+
+class Product(BaseModel):
+    name: str
+    price: float
+
+class Order(BaseModel):
+    order_id: str
+    items: List[Product]
+
+order = Order(
+    order_id="ORD1001",
+    items=[
+        Product(name="Laptop", price=50000),
+        Product(name="Mouse", price=500)
+    ]
+)
+
+print(order.items[0].name)  # Output: Laptop
+```
+
+## 🎯 Example 3: Company with Employees
+
+```python
+class Employee(BaseModel):
+    name: str
+    position: str
+
+class Company(BaseModel):
+    company_name: str
+    employees: list[Employee]
+
+c = Company(
+    company_name="TechCorp",
+    employees=[
+        Employee(name="Pratik", position="Developer"),
+        Employee(name="Nitin", position="Manager")
+    ]
+)
+
+print(c.employees[1].position)  # Output: Manager
+```
+
+## 🔥 Key Points
+
+| Feature                             | Meaning |
+| ----------------------------------- | ------- |
+| Uses model inside another model     | ✔ Yes   |
+| Supports lists of models            | ✔ Yes   |
+| Automatic validation of nested data | ✔ Yes   |
+| Reduces code duplication            | ✔ Yes   |
+| Improves readability                | ✔ Yes   |
+
+## 🛑 Common Mistake
+
+❌ Wrong:
+
+```python
+address = {"city": "Pune"}
+```
+
+✔ Correct:
+
+```python
+address = {"city": "Pune", "state": "MH", "pincode": 411001}
+```
+
+Pydantic converts dictionaries into model instances automatically.
+
+## 🧾 Summary
+
+Nested models are perfect when:
+
+✔ Data is complex and contains sub-data
+✔ You want reusable, professional data structures
+✔ You need validation across multiple levels
+
+They make models more powerful and your code cleaner and easier to maintain.
+
 
 ### **🔟 Serialization**
 
