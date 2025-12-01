@@ -60,6 +60,142 @@ If there is any wrong data, Pydantic throws an error.
 insert_data(patient)
 ```
 
+# Pydantic Code Explanation
+
+## Code Overview
+
+This code demonstrates how to use Pydantic models to validate and handle patient data.
+
+```python
+from pydantic import BaseModel
+
+class Patient(BaseModel):
+    name: str
+    age: int
+
+
+def insert_patient_data(patient: Patient):
+    print(patient.name)
+    print(patient.age)
+    print('inserted')
+
+
+patient_info = {'name': 'pratik', 'age': 19}
+
+patient1 = Patient(**patient_info)
+
+insert_patient_data(patient1)
+```
+
+## Explanation of the Code
+
+### 1. Importing BaseModel
+
+```python
+from pydantic import BaseModel
+```
+
+`BaseModel` is imported from Pydantic. It helps create a model with strict type validation.
+
+### 2. Creating the `Patient` Model
+
+```python
+class Patient(BaseModel):
+    name: str
+    age: int
+```
+
+* `Patient` is a Pydantic model.
+* It expects two fields:
+
+  * `name` → must be a string
+  * `age` → must be an integer
+
+If the wrong data type is passed, Pydantic will throw a validation error.
+
+### 3. Function That Uses the Model
+
+```python
+def insert_patient_data(patient: Patient):
+    print(patient.name)
+    print(patient.age)
+    print('inserted')
+```
+
+* This function accepts only a `Patient` object.
+* It prints the name, age, and a confirmation message.
+
+### 4. Patient Data as a Dictionary
+
+```python
+patient_info = {'name': 'pratik', 'age': 19}
+```
+
+The patient details are stored in a dictionary.
+
+### 5. Creating a Pydantic Object Using `**`
+
+```python
+patient1 = Patient(**patient_info)
+```
+
+This line converts the dictionary into keyword arguments.
+It is the same as writing:
+
+```python
+patient1 = Patient(name='pratik', age=19)
+```
+
+## What Does `**patient_info` Mean?
+
+`**` is the **dictionary unpacking operator** in Python.
+
+It takes a dictionary and expands each key-value pair as a named argument.
+
+### Without Unpacking
+
+```python
+Patient(name='pratik', age=19)
+```
+
+### With Unpacking
+
+```python
+patient_info = {'name': 'pratik', 'age': 19}
+Patient(**patient_info)
+```
+
+➡️ Both produce the same result.
+
+### Why Use `**`?
+
+* Cleaner code
+* Useful when there are many fields
+* Works dynamically with unknown keys
+
+### 6. Calling the Function
+
+```python
+insert_patient_data(patient1)
+```
+
+Output:
+
+```
+pratik
+19
+inserted
+```
+
+The validated data is now used successfully.
+
+## Summary
+
+* Pydantic validates data types automatically.
+* `Patient(**patient_info)` unpacks dictionary values into model arguments.
+* The code ensures clean, safe, and structured data handling.
+
+
 ---
 
 ## Key Concepts in Pydantic
