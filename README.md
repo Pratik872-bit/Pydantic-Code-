@@ -276,24 +276,150 @@ Uses:
 ---
 
 ### **6️⃣ Field Validators**
+# Pydantic `field_validator` – Simple Explanation
 
-Validate or transform a single field using decorators.
+## 🚀 What is `field_validator`?
+
+`field_validator` is a decorator in **Pydantic v2** used to:
+
+* Validate a **single field**
+* Modify or clean the field value
+* Raise **custom errors** if the value is incorrect
+
+Think of `field_validator` as a **security guard** that checks a specific field before the model object is created.
+
+## 🧠 When do we need `field_validator`?
+
+Use it when:
+
+* You want to validate a specific field
+* The default Pydantic type validation is not enough
+
+### Common Use Cases
+
+* Name must be in **uppercase**
+* Age must be **greater than 18**
+* Email must belong to a specific domain like `@gmail.com`
+* Phone number must have **10 digits**
+
+## 🔍 Syntax (Pydantic v2)
 
 ```python
-@field_validator("email")
-def check_company_email(cls, value):
-    if not value.endswith("@hdfc.com"):
-        raise ValueError("Invalid company email")
-    return value
+from pydantic import BaseModel, field_validator
+
+class ModelName(BaseModel):
+    field_name: type
+
+    @field_validator("field_name")
+    def validate_field(cls, value):
+        # check value here
+        return value
 ```
 
-Can transform values too:
+## 🎯 Example 1: Validate Email Domain
+
+**Only allow Gmail email addresses**
+
+```python
+from pydantic import BaseModel, EmailStr, field_validator
+
+class User(BaseModel):
+    email: EmailStr
+
+    @field_validator("email")
+    def check_gmail(cls, value):
+        if not value.endswith("@gmail.com"):
+            raise ValueError("Only Gmail addresses are allowed")
+        return value
+
+user = User(email="pratik@gmail.com")  # ✔ Works
+```
+
+### ❌ Invalid Case
+
+```python
+User(email="pratik@yahoo.com")
+```
+
+**Output:**
+
+```
+ValidationError: Only Gmail addresses are allowed
+```
+
+## 🎯 Example 2: Transform Name Automatically
+
+**Make every name uppercase**
+
+```python
+from pydantic import BaseModel, field_validator
+
+class Person(BaseModel):
+    name: str
+
+    @field_validator("name")
+    def upper_case_name(cls, value):
+        return value.upper()
+
+p = Person(name="pratik")
+print(p.name)   # Output: PRATIK
+```
+
+Here, the validator **modifies the input value**.
+
+## 🎯 Example 3: Validate Phone Number Format
+
+**Phone number must be exactly 10 digits**
+
+```python
+from pydantic import BaseModel, field_validator
+
+class Contact(BaseModel):
+    phone: str
+
+    @field_validator("phone")
+    def check_phone(cls, value):
+        if not value.isdigit() or len(value) != 10:
+            raise ValueError("Phone number must be 10 digits")
+        return value
+```
+
+## 🔥 Key Points
+
+| Feature                           | Meaning |
+| --------------------------------- | ------- |
+| Runs on a single field            | Yes     |
+| Can modify the value              | Yes     |
+| Can raise custom errors           | Yes     |
+| Runs before model object creation | Yes     |
+
+## 🛑 Common Mistake
+
+Pydantic v1 syntax **does NOT work** in v2:
+
+```python
+# ❌ Wrong
+@validator("name")
+```
+
+### ✔ Correct for v2
 
 ```python
 @field_validator("name")
-def uppercase_name(cls, v):
-    return v.upper()
 ```
+
+## 🧾 Summary
+
+Use `field_validator` when:
+
+✔ You want **extra validation**
+✔ You want to **transform** a field value
+✔ You need **custom rules**
+
+It ensures that **invalid data never enters your system**.
+
+---
+
 
 ---
 

@@ -1,5 +1,5 @@
 
-from pydantic import BaseModel,EmailStr,AnyUrl
+from pydantic import BaseModel,EmailStr,AnyUrl,field_validator
 from pydantic import Field
 from typing import List,Dict,Optional
 
@@ -31,12 +31,4 @@ patient_info={'name':'pratik','age':19,'weight':45.34,'linkedin_url':'https://ch
 patient1=Patient(**patient_info)
 
 insert_patient_data(patient1)
-
-
-
-
-
-
-
-
 
