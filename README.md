@@ -441,20 +441,152 @@ def check_emergency_contact(cls, model):
 
 ### **8️⃣ Computed Fields**
 
-Fields that are calculated from other fields.
+# Pydantic `computed_field` – Explained Simply
 
-Example: Calculate BMI
+## 🧮 What is `computed_field` in Pydantic v2?
+
+`computed_field` is a decorator used to create **calculated fields** in a Pydantic model.
+
+➡️ These fields are **not given by the user**
+➡️ Instead, they are **automatically computed** using other fields in the model
+
+Think of `computed_field` as a smart **auto-calculator** inside your model.
+
+## 🧠 Why do we need `computed_field`?
+
+Use it when:
+
+✔ A value depends on other fields
+✔ You don’t want the user to input that value manually
+✔ You want clean, reusable, and self-updating data
+
+### Real examples:
+
+* BMI calculated from weight and height
+* Full name from first_name + last_name
+* Discounted price from original price and discount
+* Age calculated from Date of Birth
+
+## 🔍 Syntax (Pydantic v2)
+
+```python
+from pydantic import BaseModel, computed_field
+
+class ModelName(BaseModel):
+    field1: type
+    field2: type
+
+    @computed_field
+    @property
+    def new_field(self) -> type:
+        return expression_using_other_fields
+```
+
+## 🎯 Example 1: Calculate BMI Automatically
+
+```python
+from pydantic import BaseModel, computed_field
+
+class Patient(BaseModel):
+    weight: float  # in kg
+    height: float  # in meters
+
+    @computed_field
+    @property
+    def bmi(self) -> float:
+        return round(self.weight / (self.height ** 2), 2)
+
+person = Patient(weight=70, height=1.75)
+print(person.bmi)  # Output: 22.86
+```
+
+### 🔍 Explanation
+
+* User gives only **weight** and **height**
+* `bmi` is automatically computed using the formula:
+
+```
+BMI = weight / (height²)
+```
+
+No need to provide BMI manually!
+
+## 🎯 Example 2: Full Name Generator
+
+```python
+from pydantic import BaseModel, computed_field
+
+class User(BaseModel):
+    first_name: str
+    last_name: str
+
+    @computed_field
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}".title()
+
+u = User(first_name="pratik", last_name="naik")
+print(u.full_name)   # Output: Pratik Naik
+```
+
+## 🎯 Example 3: Discounted Price
+
+```python
+class Product(BaseModel):
+    price: float
+    discount: float  # percent
+
+    @computed_field
+    @property
+    def final_price(self) -> float:
+        return self.price - (self.price * self.discount / 100)
+
+p = Product(price=1000, discount=10)
+print(p.final_price)  # Output: 900.0
+```
+
+## 🔥 Key Points
+
+| Feature                               | Meaning |
+| ------------------------------------- | ------- |
+| User does not give the computed value | ✔️ Yes  |
+| Depends on other fields               | ✔️ Yes  |
+| Auto-updated always                   | ✔️ Yes  |
+| Improves code readability             | ✔️ Yes  |
+
+## 🛑 Common Mistake
+
+❌ Wrong in Pydantic v2:
+
+```python
+@property
+def bmi(self):
+    ...
+```
+
+✔ Correct:
 
 ```python
 @computed_field
 @property
-def bmi(self) -> float:
-    return round(self.weight / (self.height ** 2), 2)
+def bmi(self):
+    ...
 ```
 
-User doesn’t give BMI — Pydantic computes it automatically.
+Without `@computed_field`, the field is **not included** in the model output.
 
----
+## 🧾 Summary
+
+`computed_field` is used when:
+
+✔ You want to generate values automatically
+✔ No user input should be required for that field
+✔ The value depends on other existing fields
+✔ Your model should look clean and professional
+
+It ensures calculated values are always correct and never manually entered by mistake.
+
+
 
 ### **9️⃣ Nested Models**
 
